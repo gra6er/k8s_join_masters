@@ -14,3 +14,6 @@
 - name: Apply join commands in masters
   command: "{{ join_command.stdout }}"
   when: inventory_hostname != groups.masters[0]
+
+- name: Wait for master nodes to be ready
+  command: kubectl wait --for=condition=Ready nodes --all --timeout=600s
