@@ -1,0 +1,16 @@
+---
+- name: Get certificate key from cluster
+  command: "kubeadm init phase upload-certs --upload-certs "
+  run_once: true
+  delegate_to: "{{ groups.masters[0] }}"
+  register: cert_key
+
+- name: Generate join command
+  command: "kubeadm token create --certificate-key {{ cert_key.stdout_lines[-1] }} --print-join-command"
+  delegate_to: "{{ groups.masters[0] }}"
+  register: join_command
+  when: inventory_hostname != groups.masters[0]
+
+- name: Apply join commands in masters
+  command: "{{ join_command.stdout }}"
+  when: inventory_hostname != groups.masters[0]
