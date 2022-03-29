@@ -16,4 +16,6 @@
   when: inventory_hostname != groups.masters[0]
 
 - name: Wait for master nodes to be ready
+  delegate_to: "{{ groups.masters[0] }}"
+  run_once: true
   command: kubectl wait --for=condition=Ready nodes --all --timeout=600s
